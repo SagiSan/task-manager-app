@@ -9,11 +9,13 @@ import {
   ParseIntPipe,
   UseGuards,
   Req,
+  Query,
 } from '@nestjs/common';
 import { TaskService } from './task.service';
 import { CreateTaskDto } from './dto/create-task.dto';
 import { JwtAuthGuard } from '../auth/jwt-auth.guard';
 import { Request } from 'express';
+import { GetTasksDto } from './dto/get-tasks.dto';
 
 interface RequestWithUser extends Request {
   user: {
@@ -38,9 +40,9 @@ export class TaskController {
   }
 
   @Get()
-  async getTasks(@Req() req: RequestWithUser) {
-    const userId = req.user['userId'];
-    return this.taskService.getTasks(userId);
+  async getTasks(@Req() req: RequestWithUser, @Query() query: GetTasksDto) {
+    const userId = req.user.userId;
+    return this.taskService.getTasks(userId, query);
   }
 
   @Get(':id')

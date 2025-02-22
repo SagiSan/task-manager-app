@@ -1,6 +1,7 @@
 import { Injectable, NotFoundException } from '@nestjs/common';
 import { PrismaService } from '../prisma.service';
 import { CreateTaskDto } from './dto/create-task.dto';
+import { GetTasksDto } from './dto/get-tasks.dto';
 
 @Injectable()
 export class TaskService {
@@ -15,9 +16,26 @@ export class TaskService {
     });
   }
 
-  async getTasks(userId: number) {
+  async getTasks(userId: number, query: GetTasksDto) {
+    const whereClause: any = { createdById: userId };
+
+    if (query.status) {
+      whereClause.status = query.status;
+    }
+    if (query.priority) {
+      whereClause.priority = query.priority;
+    }
+    if (query.dueDate) {
+      whereClause.dueDate = { lte: new Date(query.dueDate) };
+    }
+
+    const sortOrder = query.sortOrder || 'desc';
+
     return this.prisma.task.findMany({
-      where: { createdById: userId },
+      where: whereClause,
+      orderBy: {
+        createdAt: sortOrder,
+      },
     });
   }
 
