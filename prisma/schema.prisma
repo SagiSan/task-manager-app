@@ -40,13 +40,21 @@ model User {
 }
 
 model Task {
-  id           Int      @id @default(autoincrement())
-  title        String
-  description  String?
-  status       Status   @default(pending)
-  priority     Priority @default(low)
-  dueDate      DateTime?
-  createdAt    DateTime @default(now())
-  createdById  Int
-  createdBy    User     @relation(fields: [createdById], references: [id])
+  id          Int       @id @default(autoincrement())
+  title       String
+  description String?
+  status      Status    @default(pending)
+  priority    Priority  @default(low)
+  dueDate     DateTime?
+  createdAt   DateTime  @default(now())
+  createdById Int
+  createdBy   User      @relation(fields: [createdById], references: [id])
+  categoryId  Int?
+  category    Category? @relation(fields: [categoryId], references: [id])
+}
+
+model Category {
+  id    Int    @id @default(autoincrement())
+  name  String @unique
+  tasks Task[]
 }

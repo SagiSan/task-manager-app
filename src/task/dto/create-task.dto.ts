@@ -4,6 +4,7 @@ import {
   IsString,
   IsEnum,
   IsDateString,
+  IsInt,
 } from 'class-validator';
 import { Status, Priority } from '@prisma/client';
 
@@ -27,4 +28,8 @@ export class CreateTaskDto {
   @IsOptional()
   @IsDateString()
   dueDate?: string;
+
+  @IsOptional()
+  @IsInt()
+  categoryId?: number;
 }
