@@ -7,13 +7,11 @@ import {
   ParseIntPipe,
   UseGuards,
   Req,
-  NotFoundException,
 } from '@nestjs/common';
 import { CommentService } from './comment.service';
 import { CreateCommentDto } from './dto/create-comment.dto';
 import { JwtAuthGuard } from '../auth/jwt-auth.guard';
 import { Request } from 'express';
-import { PrismaService } from 'src/prisma.service';
 
 interface RequestWithUser extends Request {
   user: {
@@ -26,10 +24,7 @@ interface RequestWithUser extends Request {
 @Controller('comments')
 @UseGuards(JwtAuthGuard)
 export class CommentController {
-  constructor(
-    private readonly commentService: CommentService,
-    private readonly prisma: PrismaService,
-  ) {}
+  constructor(private readonly commentService: CommentService) {}
 
   @Post(':taskId')
   async createComment(
