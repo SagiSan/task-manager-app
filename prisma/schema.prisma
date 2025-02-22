@@ -31,12 +31,13 @@ enum Priority {
 }
 
 model User {
-  id        Int      @id @default(autoincrement())
-  email     String   @unique
+  id        Int       @id @default(autoincrement())
+  email     String    @unique
   password  String
-  role      Role     @default(USER)
-  createdAt DateTime @default(now())
+  role      Role      @default(USER)
+  createdAt DateTime  @default(now())
   tasks     Task[]
+  Comment   Comment[]
 }
 
 model Task {
@@ -51,10 +52,21 @@ model Task {
   createdBy   User      @relation(fields: [createdById], references: [id])
   categoryId  Int?
   category    Category? @relation(fields: [categoryId], references: [id])
+  Comment     Comment[]
 }
 
 model Category {
   id    Int    @id @default(autoincrement())
   name  String @unique
   tasks Task[]
+}
+
+model Comment {
+  id        Int      @id @default(autoincrement())
+  content   String
+  createdAt DateTime @default(now())
+  taskId    Int
+  task      Task     @relation(fields: [taskId], references: [id])
+  userId    Int
+  user      User     @relation(fields: [userId], references: [id])
 }
