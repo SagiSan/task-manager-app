@@ -10,7 +10,7 @@ import {
 } from '@nestjs/common';
 import { CommentService } from './comment.service';
 import { CreateCommentDto } from './dto/create-comment.dto';
-import { JwtAuthGuard } from '../auth/jwt-auth.guard';
+import { JwtCookieGuard } from '../auth/jwt-cookie.guard';
 import { Request } from 'express';
 
 interface RequestWithUser extends Request {
@@ -22,7 +22,7 @@ interface RequestWithUser extends Request {
 }
 
 @Controller('comments')
-@UseGuards(JwtAuthGuard)
+@UseGuards(JwtCookieGuard)
 export class CommentController {
   constructor(private readonly commentService: CommentService) {}
 

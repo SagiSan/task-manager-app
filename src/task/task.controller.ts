@@ -13,7 +13,7 @@ import {
 } from '@nestjs/common';
 import { TaskService } from './task.service';
 import { CreateTaskDto } from './dto/create-task.dto';
-import { JwtAuthGuard } from '../auth/jwt-auth.guard';
+import { JwtCookieGuard } from '../auth/jwt-cookie.guard';
 import { Request } from 'express';
 import { GetTasksDto } from './dto/get-tasks.dto';
 
@@ -26,7 +26,7 @@ interface RequestWithUser extends Request {
 }
 
 @Controller('tasks')
-@UseGuards(JwtAuthGuard)
+@UseGuards(JwtCookieGuard)
 export class TaskController {
   constructor(private readonly taskService: TaskService) {}
 

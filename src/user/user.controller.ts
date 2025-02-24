@@ -11,8 +11,8 @@ import {
 } from '@nestjs/common';
 import { UserService } from './user.service';
 import { CreateUserDto } from './dto/create-user.dto';
-import { JwtAuthGuard } from 'src/auth/jwt-auth.guard';
 import { Roles } from 'src/auth/roles.decorator';
+import { JwtCookieGuard } from 'src/auth/jwt-cookie.guard';
 import { RolesGuard } from 'src/auth/roles.guard';
 import { UpdateUserDto } from './dto/update-user.dto';
 
@@ -25,14 +25,14 @@ export class UserController {
     return this.userService.createUser(createUserDto);
   }
 
-  @UseGuards(JwtAuthGuard, RolesGuard)
+  @UseGuards(JwtCookieGuard, RolesGuard)
   @Roles('ADMIN')
   @Post('admin')
   async createUserAsAdmin(@Body() createUserDto: CreateUserDto) {
     return this.userService.createUser(createUserDto);
   }
 
-  @UseGuards(JwtAuthGuard, RolesGuard)
+  @UseGuards(JwtCookieGuard, RolesGuard)
   @Roles('ADMIN')
   @Put(':id')
   async updateUser(
@@ -42,14 +42,14 @@ export class UserController {
     return this.userService.updateUser(id, updateUserDto);
   }
 
-  @UseGuards(JwtAuthGuard, RolesGuard)
+  @UseGuards(JwtCookieGuard, RolesGuard)
   @Roles('ADMIN')
   @Delete(':id')
   async deleteUser(@Param('id', ParseIntPipe) id: number) {
     return this.userService.deleteUser(id);
   }
 
-  @UseGuards(JwtAuthGuard, RolesGuard)
+  @UseGuards(JwtCookieGuard, RolesGuard)
   @Roles('ADMIN')
   @Get('all')
   async getAllUsers() {
