@@ -12,11 +12,17 @@ import { Response } from 'express';
 import { LoginUserDto } from '../user/dto/login-user.dto';
 import { jwtConstants } from './constants';
 import { JwtService } from '@nestjs/jwt';
+import {
+  ApiCookieAuth,
+  ApiOperation,
+  ApiResponse,
+  ApiTags,
+} from '@nestjs/swagger';
 
 interface RequestWithCookies extends Request {
   cookies: Record<string, string>;
 }
-
+@ApiTags('auth')
 @Controller('auth')
 export class AuthController {
   constructor(
@@ -25,6 +31,9 @@ export class AuthController {
   ) {}
 
   @Post('login')
+  @ApiOperation({ summary: 'User login' })
+  @ApiResponse({ status: 200, description: 'Logged in successfully' })
+  @ApiResponse({ status: 401, description: 'Invalid credentials' })
   async login(
     @Body() loginUserDto: LoginUserDto,
     @Res({ passthrough: true }) response: Response,
@@ -43,12 +52,18 @@ export class AuthController {
   }
 
   @Post('logout')
+  @ApiOperation({ summary: 'User logout' })
+  @ApiResponse({ status: 200, description: 'Logged out successfully' })
   async logout(@Res({ passthrough: true }) response: Response) {
     response.clearCookie('access_token');
     return { message: 'Logged out successfully' };
   }
 
   @Get('me')
+  @ApiOperation({ summary: 'Get current user' })
+  @ApiCookieAuth()
+  @ApiResponse({ status: 200, description: 'User data returned successfully' })
+  @ApiResponse({ status: 401, description: 'Not logged in / Invalid token' })
   async getMe(@Req() req: RequestWithCookies) {
     const token = req.cookies['access_token'];
     if (!token) {

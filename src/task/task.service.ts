@@ -11,6 +11,7 @@ export class TaskService {
     return this.prisma.task.create({
       data: {
         ...createTaskDto,
+        dueDate: createTaskDto.dueDate ? new Date(createTaskDto.dueDate) : null,
         createdById: userId,
       },
     });
@@ -57,7 +58,10 @@ export class TaskService {
     await this.getTaskById(taskId, userId);
     return this.prisma.task.update({
       where: { id: taskId },
-      data: updateData,
+      data: {
+        ...updateData,
+        dueDate: updateData.dueDate ? new Date(updateData.dueDate) : null,
+      },
     });
   }
 
