@@ -10,6 +10,7 @@ import {
   UseGuards,
   Req,
   Query,
+  UseInterceptors,
 } from '@nestjs/common';
 import { TaskService } from './task.service';
 import { CreateTaskDto } from './dto/create-task.dto';
@@ -22,6 +23,7 @@ import {
   ApiOperation,
   ApiResponse,
 } from '@nestjs/swagger';
+import { LoggingInterceptor } from 'src/interceptors/logging.interceptor';
 
 interface RequestWithUser extends Request {
   user: {
@@ -33,6 +35,7 @@ interface RequestWithUser extends Request {
 
 @ApiTags('tasks')
 @ApiBearerAuth()
+@UseInterceptors(LoggingInterceptor)
 @Controller('tasks')
 @UseGuards(JwtCookieGuard)
 export class TaskController {
