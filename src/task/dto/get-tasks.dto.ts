@@ -1,4 +1,4 @@
-import { IsOptional, IsEnum, IsDateString, IsIn } from 'class-validator';
+import { IsOptional, IsEnum, IsDateString, IsIn, IsInt } from 'class-validator';
 import { ApiPropertyOptional } from '@nestjs/swagger';
 import { Status, Priority } from '@prisma/client';
 
@@ -28,6 +28,22 @@ export class GetTasksDto {
   @IsOptional()
   @IsDateString({}, { message: 'Due date must be a valid ISO date string' })
   dueDate?: string;
+
+  @ApiPropertyOptional({
+    description: 'Page number for pagination',
+    default: 1,
+  })
+  @IsOptional()
+  @IsInt()
+  page?: number;
+
+  @ApiPropertyOptional({
+    description: 'Number of tasks per page',
+    default: 10,
+  })
+  @IsOptional()
+  @IsInt()
+  limit?: number;
 
   @ApiPropertyOptional({
     description: 'Sort order for tasks',

@@ -18,6 +18,7 @@ export class TaskService {
   }
 
   async getTasks(userId: number, query: GetTasksDto) {
+    const { page, limit, sortOrder } = query;
     const whereClause: any = { createdById: userId };
 
     if (query.status) {
@@ -30,14 +31,25 @@ export class TaskService {
       whereClause.dueDate = { lte: new Date(query.dueDate) };
     }
 
-    const sortOrder = query.sortOrder || 'desc';
+    const orderBy = { createdAt: sortOrder || 'desc' };
 
-    return this.prisma.task.findMany({
-      where: whereClause,
-      orderBy: {
-        createdAt: sortOrder,
-      },
-    });
+    if (page && limit) {
+      const skip = (Number(page) - 1) * Number(limit);
+      const tasks = await this.prisma.task.findMany({
+        where: whereClause,
+        orderBy,
+        skip,
+        take: Number(limit),
+      });
+      const total = await this.prisma.task.count({ where: whereClause });
+      return { tasks, total };
+    } else {
+      const tasks = await this.prisma.task.findMany({
+        where: whereClause,
+        orderBy,
+      });
+      return { tasks, total: tasks.length };
+    }
   }
 
   async getTaskById(taskId: number, userId: number) {

@@ -7,6 +7,7 @@ import {
   ParseIntPipe,
   UseGuards,
   Req,
+  Query,
 } from '@nestjs/common';
 import { CommentService } from './comment.service';
 import { CreateCommentDto } from './dto/create-comment.dto';
@@ -18,6 +19,7 @@ import {
   ApiOperation,
   ApiResponse,
 } from '@nestjs/swagger';
+import { GetCommentsDto } from './dto/get-comments.dto';
 
 interface RequestWithUser extends Request {
   user: {
@@ -47,9 +49,18 @@ export class CommentController {
   }
 
   @Get(':taskId')
-  @ApiOperation({ summary: 'Get all comments for a specific task' })
+  @ApiOperation({
+    summary: 'Get all comments for a specific task with pagination',
+  })
   @ApiResponse({ status: 200, description: 'Comments retrieved successfully.' })
-  async getComments(@Param('taskId', ParseIntPipe) taskId: number) {
-    return this.commentService.getCommentsForTask(taskId);
+  async getComments(
+    @Param('taskId', ParseIntPipe) taskId: number,
+    @Query() query: GetCommentsDto,
+  ) {
+    return this.commentService.getCommentsForTask(
+      taskId,
+      query.page,
+      query.limit,
+    );
   }
 }

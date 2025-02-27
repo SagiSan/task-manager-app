@@ -25,15 +25,28 @@ export class CommentService {
     });
   }
 
-  async getCommentsForTask(taskId: number) {
+  async getCommentsForTask(taskId: number, page?: number, limit?: number) {
     const task = await this.prisma.task.findUnique({ where: { id: taskId } });
     if (!task) {
       throw new NotFoundException(`Task with id ${taskId} not found`);
     }
 
-    return this.prisma.comment.findMany({
-      where: { taskId },
-      orderBy: { createdAt: 'asc' },
-    });
+    if (page && limit) {
+      const skip = (Number(page) - 1) * Number(limit);
+      const comments = await this.prisma.comment.findMany({
+        where: { taskId },
+        orderBy: { createdAt: 'asc' },
+        skip,
+        take: Number(limit),
+      });
+      const total = await this.prisma.comment.count({ where: { taskId } });
+      return { comments, total };
+    } else {
+      const comments = await this.prisma.comment.findMany({
+        where: { taskId },
+        orderBy: { createdAt: 'asc' },
+      });
+      return { comments, total: comments.length };
+    }
   }
 }
