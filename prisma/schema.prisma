@@ -1,9 +1,3 @@
-// This is your Prisma schema file,
-// learn more about it in the docs: https://pris.ly/d/prisma-schema
-
-// Looking for ways to speed up your queries, or scale easily with your serverless or edge functions?
-// Try Prisma Accelerate: https://pris.ly/cli/accelerate-init
-
 generator client {
   provider = "prisma-client-js"
 }
@@ -38,6 +32,8 @@ model User {
   createdAt DateTime  @default(now())
   tasks     Task[]
   Comment   Comment[]
+
+  @@map("User")
 }
 
 model Task {
@@ -53,12 +49,16 @@ model Task {
   categoryId  Int?
   category    Category? @relation(fields: [categoryId], references: [id])
   Comment     Comment[]
+
+  @@map("Task")
 }
 
 model Category {
   id    Int    @id @default(autoincrement())
   name  String @unique
   tasks Task[]
+
+  @@map("Category")
 }
 
 model Comment {
@@ -69,4 +69,6 @@ model Comment {
   task      Task     @relation(fields: [taskId], references: [id])
   userId    Int
   user      User     @relation(fields: [userId], references: [id])
+
+  @@map("Comment")
 }
