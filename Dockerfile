@@ -15,11 +15,14 @@ COPY package.json package-lock.json ./
 # Install all dependencies (including devDependencies)
 RUN npm install
 
-# NOW set NODE_ENV to production
+# Set NODE_ENV to production **AFTER** dependencies are installed
 ENV NODE_ENV=production
 
 # Copy all project files
 COPY . .
+
+# Generate Prisma client (if using Prisma)
+RUN npx prisma generate
 
 # Build the NestJS backend
 RUN npm run build
@@ -30,6 +33,6 @@ EXPOSE 3000
 # Start the backend
 CMD ["dumb-init", "npm", "run", "start"]
 
-# Healthcheck for backend API
-HEALTHCHECK --interval=10s --timeout=2s --start-period=15s \
-CMD curl -fs http://localhost:3000/api/health || exit 1
+# ✅ Fix Health Check for Backend API
+HEALTHCHECK --interval=30s --timeout=5s --start-period=30s \
+  CMD curl -fs http://localhost:3000/api/health || exit 1
