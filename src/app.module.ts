@@ -7,10 +7,18 @@ import { AuthModule } from './auth/auth.module';
 import { TaskModule } from './task/task.module';
 import { CategoryModule } from './category/category.module';
 import { CommentModule } from './comment/comment.module';
+import { WebsocketModule } from './websocket/websocket.module';
 
 @Module({
-  imports: [PrismaModule, UserModule, AuthModule, TaskModule, CategoryModule, CommentModule],
+  imports: [
+    PrismaModule,
+    UserModule,
+    AuthModule,
+    TaskModule,
+    CategoryModule,
+    CommentModule,
+  ],
   controllers: [AppController],
-  providers: [AppService],
+  providers: [AppService, WebsocketModule],
 })
 export class AppModule {}

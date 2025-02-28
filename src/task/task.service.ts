@@ -2,10 +2,14 @@ import { Injectable, NotFoundException } from '@nestjs/common';
 import { PrismaService } from '../prisma.service';
 import { CreateTaskDto } from './dto/create-task.dto';
 import { GetTasksDto } from './dto/get-tasks.dto';
+import { WebsocketGateway } from 'src/websocket/websocket.gateway';
 
 @Injectable()
 export class TaskService {
-  constructor(private readonly prisma: PrismaService) {}
+  constructor(
+    private readonly prisma: PrismaService,
+    private readonly websocketGateway: WebsocketGateway,
+  ) {}
 
   async createTask(createTaskDto: CreateTaskDto, userId: number) {
     return this.prisma.task.create({
@@ -68,13 +72,16 @@ export class TaskService {
     userId: number,
   ) {
     await this.getTaskById(taskId, userId);
-    return this.prisma.task.update({
+    const updatedTask = await this.prisma.task.update({
       where: { id: taskId },
       data: {
         ...updateData,
         dueDate: updateData.dueDate ? new Date(updateData.dueDate) : null,
       },
     });
+
+    this.websocketGateway.server.emit('task_update', updatedTask);
+    return updatedTask;
   }
 
   async deleteTask(taskId: number, userId: number) {
