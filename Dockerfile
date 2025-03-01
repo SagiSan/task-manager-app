@@ -33,6 +33,6 @@ EXPOSE 3000
 # Start the backend
 CMD ["dumb-init", "npm", "run", "start"]
 
-# ✅ Fix Health Check for Backend API
+# Fix Health Check for Backend API
 HEALTHCHECK --interval=30s --timeout=5s --start-period=30s \
   CMD curl -fs http://localhost:3000/api/health || exit 1
