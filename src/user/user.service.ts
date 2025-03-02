@@ -88,4 +88,22 @@ export class UserService {
       },
     });
   }
+
+  async findOrCreateUser(email: string) {
+    let user = await this.prisma.user.findUnique({ where: { email } });
+
+    if (!user) {
+      const randomPassword = Math.random().toString(36).slice(-8);
+      const hashedPassword = await bcrypt.hash(randomPassword, 10);
+
+      user = await this.prisma.user.create({
+        data: {
+          email,
+          password: hashedPassword,
+          role: Role.USER,
+        },
+      });
+    }
+    return user;
+  }
 }

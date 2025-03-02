@@ -6,6 +6,7 @@ import {
   UnauthorizedException,
   Get,
   Req,
+  UseGuards,
 } from '@nestjs/common';
 import { AuthService } from './auth.service';
 import { Response } from 'express';
@@ -18,10 +19,16 @@ import {
   ApiResponse,
   ApiTags,
 } from '@nestjs/swagger';
+import { GoogleOauthGuard } from './google-oauth.guard';
 
 interface RequestWithCookies extends Request {
   cookies: Record<string, string>;
 }
+
+export interface RequestWithUser extends Request {
+  user?: any;
+}
+
 @ApiTags('auth')
 @Controller('auth')
 export class AuthController {
@@ -49,6 +56,34 @@ export class AuthController {
       maxAge: 3600000 * 3,
     });
     return { message: 'Logged in successfully' };
+  }
+
+  @Get('google/callback')
+  @UseGuards(GoogleOauthGuard)
+  async googleAuthCallback(
+    @Req() req: RequestWithUser,
+    @Res({ passthrough: true }) response: Response,
+  ) {
+    const result = await this.authService.oAuthLogin(req.user);
+    if (!result) {
+      throw new UnauthorizedException('Invalid credentials');
+    }
+    response.cookie('access_token', result.access_token, {
+      httpOnly: true,
+      secure: false,
+      sameSite: 'strict',
+      maxAge: 3600000 * 3,
+    });
+
+    return response.send(`
+      <html>
+        <body>
+          <script>
+            window.location.href = 'http://localhost:4200/dashboard';
+          </script>
+        </body>
+      </html>
+    `);
   }
 
   @Post('logout')
