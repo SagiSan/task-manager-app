@@ -44,7 +44,8 @@ export class CommentController {
     @Body() createCommentDto: CreateCommentDto,
     @Req() req: RequestWithUser,
   ) {
-    const userId = req.user.userId;
+    const userId = req.user['userId'];
+    console.log(userId, taskId);
     return this.commentService.createComment(createCommentDto, taskId, userId);
   }
 
