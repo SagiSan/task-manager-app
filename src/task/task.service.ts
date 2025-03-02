@@ -86,8 +86,13 @@ export class TaskService {
 
   async deleteTask(taskId: number, userId: number) {
     await this.getTaskById(taskId, userId);
-    return this.prisma.task.delete({
-      where: { id: taskId },
-    });
+    return this.prisma.$transaction([
+      this.prisma.comment.deleteMany({
+        where: { taskId },
+      }),
+      this.prisma.task.delete({
+        where: { id: taskId },
+      }),
+    ]);
   }
 }
