@@ -7,6 +7,7 @@ import { JwtCookieStrategy } from './jwt.strategy';
 import { jwtConstants } from './constants';
 import { AuthController } from './auth.controller';
 import { GoogleStrategy } from './google.strategy';
+import { GithubStrategy } from './github.strategy';
 
 @Module({
   imports: [
@@ -18,7 +19,7 @@ import { GoogleStrategy } from './google.strategy';
     }),
   ],
   controllers: [AuthController],
-  providers: [AuthService, JwtCookieStrategy, GoogleStrategy],
+  providers: [AuthService, JwtCookieStrategy, GoogleStrategy, GithubStrategy],
   exports: [AuthService],
 })
 export class AuthModule {}

@@ -20,6 +20,7 @@ import {
   ApiTags,
 } from '@nestjs/swagger';
 import { GoogleOauthGuard } from './google-oauth.guard';
+import { GithubAuthGuard } from './github-oauth.guard';
 
 interface RequestWithCookies extends Request {
   cookies: Record<string, string>;
@@ -76,6 +77,34 @@ export class AuthController {
     });
 
     return response.send(`
+      <html>
+        <body>
+          <script>
+            window.location.href = 'http://localhost:4200/dashboard';
+          </script>
+        </body>
+      </html>
+    `);
+  }
+
+  @Get('github/callback')
+  @UseGuards(GithubAuthGuard)
+  async githubAuthCallback(
+    @Req() req: RequestWithUser,
+    @Res({ passthrough: true }) res: Response,
+  ) {
+    const result = await this.authService.oAuthLogin(req.user);
+    if (!result) {
+      throw new UnauthorizedException('Invalid credentials');
+    }
+    res.cookie('access_token', result.access_token, {
+      httpOnly: true,
+      secure: false,
+      sameSite: 'strict',
+      maxAge: 3600000 * 3,
+    });
+
+    return res.send(`
       <html>
         <body>
           <script>
